@@ -152,16 +152,33 @@ function renderTable() {
 
 function renderPagination() {
   const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+  const maxButtons = 10;
+
   const pagination = document.getElementById("pagination");
   pagination.innerHTML = "";
 
-  for (let i = 1; i <= pageCount; i++) {
+  let startPage = Math.floor((currentPage - 1) / maxButtons) * maxButtons + 1;
+  let endPage = Math.min(startPage + maxButtons - 1, pageCount);
+
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "이전";
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => {
+      currentPage--;
+      renderTable();
+      renderPagination();
+    };
+  pagination.appendChild(prevBtn);
+
+  for (let i = startPage; i <= endPage; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
 
     if (i === currentPage) {
-        btn.classList.add("active");
-      }
+      btn.style.background = "#2563eb";
+      btn.style.color = "#fff";
+      btn.style.fontWeight = "600";
+    }
 
     btn.onclick = () => {
       currentPage = i;
@@ -171,7 +188,17 @@ function renderPagination() {
 
     pagination.appendChild(btn);
   }
-}
+
+const nextBtn = document.createElement("button");
+  nextBtn.textContent = "다음";
+  nextBtn.disabled = currentPage === pageCount;
+  nextBtn.onclick = () => {
+    currentPage++;
+    renderTable();
+    renderPagination();
+  };
+  pagination.appendChild(nextBtn);
+  }
 
 document.getElementById("search").addEventListener("input", function () {
   const value = this.value.toLowerCase();
