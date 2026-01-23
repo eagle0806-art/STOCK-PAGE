@@ -463,16 +463,33 @@ fetch("stock.csv")
 
     searchKeyword = value;
 
-    filteredRows = allRows.filter(row => {
+  const statusPriority = { A: 3, B: 2, C: 1 };
+
+    const matchedRows = allRows.filter(row => {
       const desc = row.desc.toLowerCase();
       const part = row.part.toLowerCase();
-
-    return desc.includes(value) || part.includes(value);
-
+      return desc.includes(value) || part.includes(value);
     });
 
-  applySort();
+    const map = new Map();
 
+    matchedRows.forEach(row => {
+      const key = row.part;
+
+      if (!map.has(key)) {
+        map.set(key, row);
+      } else {
+        const existing = map.get(key);
+        if (statusPriority[row.status] > statusPriority[existing.status]) {
+          map.set(key, row);
+        }
+      }
+    });
+
+    filteredRows = Array.from(map.values());
+
+
+  applySort();
   currentPage = 1;
   renderTable();
   renderPagination();
