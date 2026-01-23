@@ -74,30 +74,36 @@
     object-fit: contain;
     margin-top: 20px;
   }  
-#pagination {
-  margin-top: 20px;
-  text-align: center;
-}
-
-#pagination button {
-  padding: 6px 12px;
-  border: 1px solid  #ccc;
-  background: white;
-  cursor: pointer;
-  border-radius: 4px;
+  #pagination {
+    margin-top: 20px;
+    text-align: center;
   }
 
-#pagination button.active {
-  background: #2c7be5;
-  color: white;
-  font-weight: bold;
-  border-color: #2c7be5;
-}
+  #pagination button {
+    padding: 6px 12px;
+    border: 1px solid  #ccc;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+    }
 
-#pagination button:hover {
-  background: #eee;
-}
+  #pagination button.active {
+    background: #2c7be5;
+    color: white;
+    font-weight: bold;
+    border-color: #2c7be5;
+  }
 
+  #pagination button:hover {
+    background: #eee;
+  }
+
+  #result-info {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #555;
+    text-align: right;
+  }
 </style>
 </head>
 <body>
@@ -110,7 +116,7 @@
 
 <div class="search-box">
   <input type="text" id="search" placeholder="예를들어 CPU, 1515, 6ES7...">
-  <button id="searchBtn">검색</button>
+  <button id="searchBtn" tupe="button">검색</button>
 </div>
 
 <table>
@@ -123,6 +129,7 @@
   </thead>
   <tbody id="table-body"></tbody>
 </table>
+<div id="result-info"></div>
 <div id="pagination"></div>
 
 
@@ -146,12 +153,13 @@ fetch("stock.csv")
          part: cols[1].replace(/"/g, ""),
          qty: cols[2].replace(/"/g, "")
        };
-}).filter(Boolean);
+    }).filter(Boolean);
 
-filteredRows = allRows;
+  filteredRows = allRows;
 
-renderTable();
+  renderTable();
     renderPagination();
+    renderResultInfo();
   });
 
 function renderTable() {
@@ -170,6 +178,22 @@ function renderTable() {
     `;
     tbody.appendChild(tr);
   });
+}
+
+function renderResultInfo() {
+  const info = document.getElementById("result-info");
+
+  const total = filteredRows.length;
+  if (total === 0) {
+    info.textContent = "검색 결과가 없습니다.";
+    return;
+  }
+
+  const start = (currentPage - 1) * rowsPerPage + 1;
+  const end = Math.min(currentPage * rowsPerPage, total);
+  const pageCount = Math.ceil(total / rowsPerPage);
+
+  info.textContent = `총 ${total}건 중 ${start}–${end}번 표시 (${currentPage} / ${pageCount} 페이지)`;
 }
 
 function renderPagination() {
@@ -259,7 +283,15 @@ document.getElementById("searchBtn").addEventListener("click", function () {
   currentPage = 1;
   renderTable();
   renderPagination();
-});</script>
+});
+
+document.getElementById("search").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    document.getElementById("searchBtn").click();
+  }
+});
+
+</script>
 
 </body>
 </html>
