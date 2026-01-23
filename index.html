@@ -171,6 +171,20 @@
   opacity: 0.8;
 }
 
+.copy-btn {
+  margin-left: 6px;
+  padding: 2px 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background: #f9fafb;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background: #e5e7eb;
+}
+
 
 </style>
 </head>
@@ -297,7 +311,10 @@ fetch("stock.csv")
       tr.innerHTML = `
         <td class="desc" title="${row.desc}">
           ${highlight(row.desc)}</td>
-        <td>${row.part}</td>
+        <td>
+          <span class="mlfb-text">${row.part}</span>
+          <button class="copy-btn" onclick="copyMLFB('${row.part}')">📋</button>
+        </td>
         <td class="status-${row.status}" onclick="openModal()">
           ${statusText(row.status)}
         </td>
@@ -516,6 +533,22 @@ fetch("stock.csv")
   modalContent.addEventListener("click", function (e) {
     e.stopPropagation();
   });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      const modal = document.getElementById("contactModal");
+      if (modal.style.display === "flex") {
+        closeModal();
+      }
+    }
+  });
+
+  function copyMLFB(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert(`MLFB 복사됨:\n${text}`);
+    });
+  }
+
 
 
 </script>
