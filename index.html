@@ -104,6 +104,10 @@
     color: #555;
     text-align: right;
   }
+  mark {
+    background-color: #fff3a0;
+    padding: 0 2px;
+  }
 </style>
 </head>
 <body>
@@ -136,6 +140,7 @@
 <script>
 let allRows = [];        //
 let filteredRows = [];  //
+let searchKeyword = ""; //
 const rowsPerPage = 30; //
 let currentPage = 1;    //
 
@@ -172,7 +177,7 @@ function renderTable() {
   pageRows.forEach(row => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="desc" title="${row.desc}">${row.desc}</td>
+      <td class="desc" title="${row.desc}">${highlight(row.desc)}</td>
       <td>${row.part}</td>
       <td>${row.qty}</td>
     `;
@@ -274,6 +279,8 @@ function renderPagination() {
 
 document.getElementById("searchBtn").addEventListener("click", function () {
   const value = document.getElementById("search").value.toLowerCase();
+  
+  searchKeyword = value;
 
   filteredRows = allRows.filter(row =>
     row.desc.toLowerCase().includes(value) ||
@@ -290,6 +297,13 @@ document.getElementById("search").addEventListener("keydown", function (e) {
     document.getElementById("searchBtn").click();
   }
 });
+
+function highlight(text) {
+  if (!searchKeyword) return text;
+
+  const regex = new RegExp(`(${searchKeyword})`, "gi");
+  return text.replace(regex, "<mark>$1</mark>");
+};
 
 </script>
 
