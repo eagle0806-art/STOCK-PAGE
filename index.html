@@ -108,6 +108,53 @@
     background-color: #fff3a0;
     padding: 0 2px;
   }
+  .status-A {
+    color: #16a34a; /* 녹색 */
+    font-weight: 600;
+  }
+
+  .status-B {
+    color: #f59e0b; /* 주황 */
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .status-C {
+    color: #6b7280; /* 회색 */
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  #contactModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+  }
+
+  .modal-content button {
+    margin-top: 16px;
+    padding: 8px 16px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
 </style>
 </head>
 <body>
@@ -122,6 +169,18 @@
   <input type="text" id="search" placeholder="예를들어 CPU, 1515, 6ES7...">
   <button id="searchBtn" type="button">검색</button>
 </div>
+
+<div id ="contactModal" style="display:none;">
+  <div class="modal-content">
+    <h3>문의 안내</h3>
+    <p>아래 연락처로 문의 바랍니다.</p>
+    <p>
+      📞 <strong>055-255-4360</strong><br>
+      ✉️ 카카오톡 채널 "주식회사 서오"</strong>
+    </p>
+    <button onclick="closeModal()">닫기</button>
+  </div>
+</div>  
 
 <table>
   <thead>
@@ -167,59 +226,62 @@ fetch("stock.csv")
     renderResultInfo();
   });
 
-function renderTable() {
-  const tbody = document.getElementById("table-body");
-  tbody.innerHTML = "";
+  function renderTable() {
+    const tbody = document.getElementById("table-body");
+    tbody.innerHTML = "";
 
-  const start = (currentPage - 1) * rowsPerPage;
-  const pageRows = filteredRows.slice(start, start + rowsPerPage);
+    const start = (currentPage - 1) * rowsPerPage;
+    const pageRows = filteredRows.slice(start, start + rowsPerPage);
 
-  pageRows.forEach(row => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="desc" title="${row.desc}">${highlight(row.desc)}</td>
-      <td>${row.part}</td>
-      <td>${statusText(row.status)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderResultInfo() {
-  const info = document.getElementById("result-info");
-
-  const total = filteredRows.length;
-  if (total === 0) {
-    info.textContent = "검색 결과가 없습니다.";
-    return;
+    pageRows.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="desc" title="${row.desc}">${highlight(row.desc)}</td>
+        <td>${row.part}</td>
+        <td class="status-${row.status}">
+            ${row.status !=="A" ? 'onclick="openModal()"' : ""}>
+          ${statusText(row.status)}
+        </td>
+      ;
+      tbody.appendChild(tr);
+    });
   }
 
-  const start = (currentPage - 1) * rowsPerPage + 1;
-  const end = Math.min(currentPage * rowsPerPage, total);
-  const pageCount = Math.ceil(total / rowsPerPage);
+  function renderResultInfo() {
+    const info = document.getElementById("result-info");
 
-  info.textContent = `총 ${total}건 중 ${start}–${end}번 표시 (${currentPage} / ${pageCount} 페이지)`;
-}
+    const total = filteredRows.length;
+    if (total === 0) {
+      info.textContent = "검색 결과가 없습니다.";
+      return;
+    }
 
-function renderPagination() {
-  const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
-  const pagination = document.getElementById("pagination");
-  pagination.innerHTML = "";
+    const start = (currentPage - 1) * rowsPerPage + 1;
+    const end = Math.min(currentPage * rowsPerPage, total);
+    const pageCount = Math.ceil(total / rowsPerPage);
 
-  const maxButtons = 7;
-  const sideButtons = Math.floor(maxButtons / 2);
-
-  function createPageButton(num) {
-    const btn = document.createElement("button");
-    btn.textContent = num;
-    if (num === currentPage) btn.classList.add("active");
-    btn.onclick = () => {
-      currentPage = num;
-      renderTable();
-      renderPagination();
-    };
-    return btn;
+    info.textContent = `총 ${total}건 중 ${start}–${end}번 표시 (${currentPage} / ${pageCount} 페이지)`;
   }
+
+  function renderPagination() {
+    const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+    const pagination = document.getElementById("pagination");
+    pagination.innerHTML = "";
+
+    const maxButtons = 7;
+    const sideButtons = Math.floor(maxButtons / 2);
+
+    function createPageButton(num) {
+      const btn = document.createElement("button");
+      btn.textContent = num;
+      if (num === currentPage) btn.classList.add("active");
+      btn.onclick = () => {
+        currentPage = num;
+        renderTable();
+        renderPagination();
+      };
+      return btn;
+    }
 
   function createDots() {
     const span = document.createElement("span");
@@ -277,46 +339,53 @@ function renderPagination() {
   pagination.appendChild(lastBtn);
 }
 
-document.getElementById("searchBtn").addEventListener("click", function () {
-  const value = document.getElementById("search").value.toLowerCase();
+  document.getElementById("searchBtn").addEventListener("click", function () {
+    const value = document.getElementById("search").value.toLowerCase();
   
-  searchKeyword = value;
+    searchKeyword = value;
 
-  filteredRows = allRows.filter(row =>
-    row.desc.toLowerCase().includes(value) ||
-    row.part.toLowerCase().includes(value)
-  );
+    filteredRows = allRows.filter(row =>
+      row.desc.toLowerCase().includes(value) ||
+      row.part.toLowerCase().includes(value)
+    );
 
-  currentPage = 1;
-  renderTable();
-  renderPagination();
-});
+    currentPage = 1;
+    renderTable();
+    renderPagination();
+  });
 
-document.getElementById("search").addEventListener("keydown", function (e) {
-  if (e.key === "Enter") {
-    document.getElementById("searchBtn").click();
+  document.getElementById("search").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      document.getElementById("searchBtn").click();
+    }
+  });
+
+  function highlight(text) {
+    if (!searchKeyword) return text;
+
+    const regex = new RegExp(`(${searchKeyword})`, "gi");
+    return text.replace(regex, "<mark>$1</mark>");
+  };
+
+  function statusText(code) {
+    switch (code) {
+      case "A":
+        return "즉시 출고 가능";
+      case "B":
+        return "재고 보유 (문의 요망)";
+      case "C":
+        return "확인 필요 (문의 요망)";
+      default:
+        return "-";
+    }
   }
-});
-
-function highlight(text) {
-  if (!searchKeyword) return text;
-
-  const regex = new RegExp(`(${searchKeyword})`, "gi");
-  return text.replace(regex, "<mark>$1</mark>");
-};
-
-function statusText(code) {
-  switch (code) {
-    case "A":
-      return "즉시 출고 가능";
-    case "B":
-      return "재고 보유 (문의 요망)";
-    case "C":
-      return "확인 필요 (문의 요망)";
-    default:
-      return "-";
+  function openModal() {
+    document.getElementById("contactModal").style.display = "flex";
   }
-}
+
+  function closeModal() {
+    document.getElementById("contactModal").style.display = "none";
+  }
 
 </script>
 
