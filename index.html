@@ -356,7 +356,30 @@ fetch("stock.csv")
 
   document.getElementById("searchBtn").addEventListener("click", function () {
     const value = document.getElementById("search").value.toLowerCase();
-  
+
+    if(!value) {
+      filteredRows = [];
+      searchKeyword = "";
+      currentPage = 1;
+      renderTable();
+      renderPagination();
+      renderResultInfo();
+      return;
+    }
+
+    if (value.length < 2) {
+      filteredRows = [];
+      searchKeyword = value;
+      currentPage = 1;
+      renderTable();
+      renderPagination();
+
+      document.getElementById("result-info").textContent =
+        "검색어는 2글자 이상 입력해주세요.";
+      return;
+    }
+
+
     searchKeyword = value;
 
     filteredRows = allRows.filter(row =>
@@ -375,6 +398,11 @@ fetch("stock.csv")
       document.getElementById("searchBtn").click();
     }
   });
+
+  document.getElementById("search").addEventListener("input", function () {
+    document.getElementById("searchBtn").disabled = this.value.trim().length < 2;
+  });
+
 
   function highlight(text) {
     if (!searchKeyword) return text;
