@@ -223,14 +223,19 @@
     opacity: 0.85;
   }
 
-  td.desc::after {
-    content: " ▸";
-    color: #9ca3af;
-    font-size: 12px;
+  td.desc {
+    position: relative;
+    cursor: pointer;
   }
 
-  td.desc.expanded::after {
-    content: " ▾";
+  .desc-toggle {
+    margin-left: 6px;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  td.desc.expanded .desc-toggle {
+    content: "▾";
   }
 
 
@@ -358,7 +363,8 @@ fetch("stock.csv")
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="desc collapsed" onclick="toggleDesc(this)">
-          ${highlight(row.desc)}
+          <span class="desc-text">${highlight(row.desc)}</span>
+          <span class="desc-toggle">▸</span>
         </td>
         <td>
           <span class="mlfb-link" onclick="copyMLFB('${row.part}')">
@@ -627,9 +633,11 @@ fetch("stock.csv")
     if (td.classList.contains("collapsed")) {
       td.classList.remove("collapsed");
       td.classList.add("expanded");
+      icon.textContent = "▾";
     } else {
       td.classList.remove("expanded");
       td.classList.add("collapsed");
+      icon.textContent = "▸";
     }
   }
 
