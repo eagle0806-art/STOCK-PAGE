@@ -224,18 +224,26 @@
   }
 
   td.desc {
-    position: relative;
     cursor: pointer;
+  }
+
+  .desc-text {
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
+
+  td.desc.expanded .desc-text {
+    white-space: normal;
   }
 
   .desc-toggle {
     margin-left: 6px;
     font-size: 12px;
     color: #9ca3af;
-  }
-
-  td.desc.expanded .desc-toggle {
-    content: "▾";
   }
 
 
@@ -363,8 +371,9 @@ fetch("stock.csv")
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="desc collapsed" onclick="toggleDesc(this)">
-          <span class="desc-text">${highlight(row.desc)}</span>
-          <span class="desc-toggle">▸</span>
+          <span class="desc-text">${row.desc}</span>
+          <span class="desc-toggle" style="display:none;">▸</span>
+
         </td>
         <td>
           <span class="mlfb-link" onclick="copyMLFB('${row.part}')">
@@ -376,6 +385,21 @@ fetch("stock.csv")
         </td>
       `;
       tbody.appendChild(tr);
+    });
+    updateDescToggles();
+  }
+
+  function updateDescToggles() {
+    document.querySelectorAll("td.desc").forEach(td => {
+      const text = td.querySelector(".desc-text");
+      const toggle = td.querySelector(".desc-toggle");
+
+       if (text.scrollWidth > text.clientWidth) {
+        toggle.style.display = "inline";
+      } else {
+        toggle.style.display = "none";
+        td.classList.remove("collapsed", "expanded");
+      }
     });
   }
 
@@ -630,14 +654,19 @@ fetch("stock.csv")
   }
 
   function toggleDesc(td) {
+    const toggle = td.querySelector(".desc-toggle");
+
+    if (toggle.style.display === "none") return;
+
     if (td.classList.contains("collapsed")) {
       td.classList.remove("collapsed");
       td.classList.add("expanded");
-      icon.textContent = "▾";
+      toggle.textContent = "▾";
+
     } else {
       td.classList.remove("expanded");
       td.classList.add("collapsed");
-      icon.textContent = "▸";
+      toggle.textContent = "▸";
     }
   }
 
