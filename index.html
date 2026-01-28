@@ -325,6 +325,8 @@ fetch("stock.csv")
 
     const lines = text.trim().split("\n");
 
+    console.log(JSON.stringify(lines[0]));
+
     let 기준일 = "-";
 
     const firstLine = lines[0].replace(/\uFEFF/g, "");
