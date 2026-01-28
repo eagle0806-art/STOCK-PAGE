@@ -331,6 +331,7 @@ fetch("stock.csv")
     if (firstLine.trim().startsWith("#DATE=")) {
       기준일 = firstLine
         .replace("#DATE=", "")
+        .replace(/[\r\n]/g, "")
         .replace(/,+$/, "")
         .trim();
       lines.shift();
