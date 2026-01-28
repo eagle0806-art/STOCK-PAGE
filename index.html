@@ -325,21 +325,14 @@ fetch("stock.csv")
 
     const lines = text.trim().split("\n");
 
-    console.log(JSON.stringify(lines[0]));
-
     let 기준일 = "-";
 
-    let firstLine = lines[0];
+    const firstLineRaw = lines[0];
 
-    firstLine = firstLine
-      .replace(/^\uFEFF/, "")
-      .replace(/^"+|"+$/g, "")
-      .replace(/,+$/g, "")
-      .trim();
+    const match = firstLineRaw.match(/#DATE=([^",\r\n]+)/);
 
-    if (firstLine.trim().startsWith("#DATE=")) {
-      기준일 = firstLine
-        .replace("#DATE=", "")
+    if (match) {
+      기준일 = match[1]
         .trim();
       lines.shift();
     }
