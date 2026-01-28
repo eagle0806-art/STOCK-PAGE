@@ -329,7 +329,10 @@ fetch("stock.csv")
 
     const firstLine = lines[0].replace(/\uFEFF/g, "");
     if (firstLine.trim().startsWith("#DATE=")) {
-      기준일 = firstLine.replace("#DATE=", "").trim();
+      기준일 = firstLine
+        .replace("#DATE=", "")
+        .replace(/,+$/, "")
+        .trim();
       lines.shift();
     }
 
