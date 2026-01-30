@@ -295,6 +295,31 @@
     display: inline-block;
     padding: 8px 0;
   }
+
+  .mobile-desc-content {
+    display: none;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .mobile-card.open .mobile-desc-content {
+    display: block;
+  }
+
+  .mobile-desc-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .toggle-icon {
+    font-size: 12px;
+  }
 }
 
 
@@ -727,16 +752,30 @@ fetch("stock.csv")
       const div = document.createElement("div");
       div.className = "mobile-card";
       div.innerHTML = `
-        <div class="mobile-desc">${highlight(row.desc)}</div>
+        <div class="mobile-desc-title" onclick="toggleMobileDesc(this)">
+          ${highlight(row.desc)}
+          <span class="toggle-icon">▼</span>
+        </div>
+
+        <div class="mobile-desc-content">
+          ${highlight(row.desc)}
+        </div>
+
         <div class="mobile-mlfb" onclick="copyMLFB('${row.part}')">
           ${highlight(row.part)}
         </div>
+
         <div class="mobile-status status-${row.status}" onclick="openModal()">
           ${statusText(row.status)}
         </div>
       `;
       container.appendChild(div);
     });
+  }
+
+  function toggleMobileDesc(el) {
+    const card = el.closest(".mobile-card");
+    card.classList.toggle("open");
   }
 
 
