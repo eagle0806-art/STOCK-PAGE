@@ -459,10 +459,15 @@ fetch("stock.csv?v=20260130")
       `데이터 기준일: ${기준일}`;
 
     const cleanedLines = lines.filter(line => line.trim() !== "");
-    const rows = cleanedLines.slice(1);
+    const rows = cleanedLines.filter(line =>
+      !line.toLowerCase().startsWith("desc")
+    );
+
 
     allRows = rows.map(row => {
-       const cols = row.split("\t").map(v => v.trim());
+       const delimiter = row.includes("\t") ? "\t" : ",";
+       const cols = row.split(delimiter).map(v => v.trim());
+
 
        if (!cols || cols.length < 2) return null;
 
@@ -779,6 +784,8 @@ fetch("stock.csv?v=20260130")
   }
 
   function renderMobileList() {
+    if (window.innerWidth > 768) return;
+
     const container = document.getElementById("mobile-list");
     if (!container) return;
 
