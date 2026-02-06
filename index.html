@@ -275,7 +275,29 @@ document.getElementById("searchBtn").addEventListener("click", () => {
   const value = document.getElementById("search").value.trim().toLowerCase();
   searchKeyword = value;
   if (value.length < 2) { alert("검색어는 2글자 이상 입력해주세요."); return; }
-  filteredRows = allRows.filter(row => normalize(row.desc).includes(normalize(value)) || normalize(row.part).includes(normalize(value)));
+  const statusPriority = { A: 3, B: 2, C: 1 };
+  const map = new Map();
+
+  allRows.forEach(row => {
+    if (
+      normalize(row.desc).includes(normalize(value)) ||
+      normalize(row.part).includes(normalize(value))
+    ) {
+      const key = row.part;
+
+      if (!map.has(key)) {
+        map.set(key, row);
+      } else {
+        const existing = map.get(key);
+        if (statusPriority[row.status] > statusPriority[existing.status]) {
+          map.set(key, row);
+        }
+      }
+    }
+  });
+
+  filteredRows = Array.from(map.values());
+
   currentPage = 1;
   applySort();
   updateView();
@@ -314,6 +336,10 @@ function openPriceModal(price) {
 }
 function closePriceModal() { document.getElementById("priceModal").style.display = "none"; }
 window.onclick = function(event) { if (event.target.id === "contactModal" || event.target.id === "priceModal") { closeModal(); closePriceModal(); } }
+
+const statusPriority = { 'A': 1, 'B': 2, 'C': 3 };
+
+
 </script>
 </body>
 </html>
