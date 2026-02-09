@@ -91,6 +91,12 @@
 
 <div class="info-row">
   <div id="update-info" style="font-size:13px;color:#666;">데이터 기준일: -</div>
+
+  <label style="font-size:13px; cursor:pointer;">
+    <input type="checkbox" id="onlySpecial" />
+    특가 제품만 보기
+  </label>
+
   <div class="sort-box">
     <select id="sortSelect">
       <option value="">정렬 없음</option>
@@ -298,6 +304,12 @@ document.getElementById("searchBtn").addEventListener("click", () => {
 
   filteredRows = Array.from(map.values());
 
+  // 특가만 보기 체크 시 필터링
+  const onlySpecial = document.getElementById("onlySpecial").checked;
+  if (onlySpecial) {
+    filteredRows = filteredRows.filter(row => row.price);
+  }
+
   currentPage = 1;
   applySort();
   updateView();
@@ -323,7 +335,7 @@ function renderResultInfo() {
 
 function highlight(text) { if (!searchKeyword) return text; const regex = new RegExp(`(${searchKeyword})`, "gi"); return text.replace(regex, "<mark>$1</mark>"); }
 function normalize(text) { return text.toLowerCase().replace(/[\s-]/g, ""); }
-function statusText(code) { const texts = { "A": "즉시 출고", "B": "재고 보유(문의)", "C": "확인 필요" }; return texts[code] || "-"; }
+function statusText(code) { const texts = { "A": "즉시 출고 가능", "B": "재고 보유(문의)", "C": "확인 필요(문의)" }; return texts[code] || "-"; }
 function toggleDesc(td) { td.classList.toggle("expanded"); }
 function toggleMobileDesc(el) { el.parentElement.classList.toggle("open"); }
 function copyMLFB(text) { navigator.clipboard.writeText(text); alert("복사되었습니다: " + text); }
@@ -338,6 +350,11 @@ function closePriceModal() { document.getElementById("priceModal").style.display
 window.onclick = function(event) { if (event.target.id === "contactModal" || event.target.id === "priceModal") { closeModal(); closePriceModal(); } }
 
 const statusPriority = { 'A': 1, 'B': 2, 'C': 3 };
+
+document.getElementById("onlySpecial").addEventListener("change", () => {
+  document.getElementById("searchBtn").click();
+});
+
 
 
 </script>
