@@ -48,6 +48,28 @@
       .mobile-desc-content { display: none; font-size: 14px; line-height: 1.5; margin-bottom: 10px; }
       .mobile-card.open .mobile-desc-content { display: block; }
     }
+
+  .empty-box {
+    padding: 40px 20px;
+    text-align: center;
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+
+  .empty-box.guide {
+    color: #777;
+    font-size: 14px;
+  }
+
+  .empty-box.no-result {
+    background: #fff5f5;
+    color: #d33;
+    font-size: 16px;
+    font-weight: 600;
+    border: 1px solid #ffd6d6;
+  }
+
+
   </style>
 </head>
 <body>
@@ -104,6 +126,9 @@
       <option value="status">재고 상태 우선</option>
     </select>
   </div>
+
+  <div id="emptyMessage" class="empty-box"></div>
+
 </div>
 
 <table>
@@ -328,10 +353,35 @@ function applySort() {
 }
 
 function renderResultInfo() {
-  const info = document.getElementById("result-info");
-  if (filteredRows.length === 0) { info.textContent = searchKeyword ? "검색 결과가 없습니다." : "검색어를 입력해주세요."; return; }
-  info.textContent = `총 ${filteredRows.length}건 검색됨 (${currentPage}페이지)`;
-}
+    const info = document.getElementById("result-info");
+    const emptyBox = document.getElementById("emptyMessage");
+
+    // 결과가 없는 경우
+    if (filteredRows.length === 0) {
+
+      info.textContent = ""; // 기존 텍스트 제거
+      emptyBox.style.display = "block";
+
+      if (!searchKeyword) {
+        emptyBox.className = "empty-box guide";
+        emptyBox.innerHTML = "🔎 검색어를 입력해주세요.";
+      } else {
+        emptyBox.className = "empty-box no-result";
+        emptyBox.innerHTML = `
+          ❗ 검색 결과가 없습니다.<br>
+          <span style="font-size:13px;font-weight:400;">
+            다른 키워드로 다시 시도해보세요.
+          </span>
+        `;
+      }
+
+      return;
+    }
+
+    // 결과가 있는 경우
+    emptyBox.style.display = "none";
+    info.textContent = `총 ${filteredRows.length}건 검색됨 (${currentPage}페이지)`;
+  }
 
 function highlight(text) { if (!searchKeyword) return text; const regex = new RegExp(`(${searchKeyword})`, "gi"); return text.replace(regex, "<mark>$1</mark>"); }
 function normalize(text) { return text.toLowerCase().replace(/[\s-]/g, ""); }
@@ -354,6 +404,7 @@ const statusPriority = { 'A': 1, 'B': 2, 'C': 3 };
 document.getElementById("onlySpecial").addEventListener("change", () => {
   document.getElementById("searchBtn").click();
 });
+
 
 
 
