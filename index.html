@@ -105,7 +105,7 @@
 
 <div id="priceModal">
   <div class="modal-content">
-    <h3>특가 안내</h3>
+    <h3>할인 안내</h3>
     <p id="price-display" style="font-size:18px;font-weight:700; color:#dc2626;"></p>
     <button onclick="closePriceModal()">닫기</button>
   </div>
@@ -116,7 +116,7 @@
 
   <label style="font-size:13px; cursor:pointer;">
     <input type="checkbox" id="onlySpecial" />
-    특가 제품만 보기
+    할인 제품만 보기
   </label>
 
   <div class="sort-box">
@@ -224,7 +224,7 @@ function renderTable() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="desc" onclick="toggleDesc(this)">
-        ${row.price ? `<span class="special-tag" onclick="openPriceModal('${row.price}'); event.stopPropagation();">🔥 특가</span>` : ''}
+        ${row.price ? `<span class="special-tag" onclick="openPriceModal('${row.price}'); event.stopPropagation();">🔥 할인</span>` : ''}
         ${highlight(row.desc)}
       </td>
       <td><span class="mlfb-link" onclick="copyMLFB('${row.part}')">${highlight(row.part)}</span></td>
@@ -248,7 +248,7 @@ function renderMobileList() {
     const shortDesc = row.desc.length > 40 ? row.desc.slice(0, 40) + "..." : row.desc;
     div.innerHTML = `
       <div class="mobile-desc-title" onclick="toggleMobileDesc(this)">
-        ${row.price ? `<span class="special-tag" onclick="openPriceModal('${row.price}'); event.stopPropagation();">🔥 특가</span>` : ''}
+        ${row.price ? `<span class="special-tag" onclick="openPriceModal('${row.price}'); event.stopPropagation();">🔥 할인</span>` : ''}
         ${highlight(shortDesc)}
       </div>
       <div class="mobile-desc-content">${highlight(row.desc)}</div>
@@ -331,7 +331,7 @@ document.getElementById("searchBtn").addEventListener("click", () => {
 
   filteredRows = Array.from(map.values());
 
-  // 특가만 보기 체크 시 필터링
+  // 할인만 보기 체크 시 필터링
   const onlySpecial = document.getElementById("onlySpecial").checked;
   if (onlySpecial) {
     filteredRows = filteredRows.filter(row => row.price);
