@@ -536,13 +536,7 @@ document.getElementById("viewAllBtn").addEventListener("click", () => {
   // 🔹 C 제외 (구매가능 기준이면 A/B만)
   filteredRows = Array.from(map.values())
     .filter(row => row.status === "A" || row.status === "B");
-
-  // 🔹 할인만 보기 체크 적용
-  const onlySpecial = document.getElementById("onlySpecial").checked;
-  if (onlySpecial) {
-    filteredRows = filteredRows.filter(row => row.price);
-  }
-
+  
   searchKeyword = ""; // 검색 강조 제거
   currentPage = 1;
   applySort();
