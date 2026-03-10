@@ -193,11 +193,6 @@
 <div class="info-row">
   <div id="update-info" style="font-size:13px;color:#666;">데이터 기준일: -</div>
 
-  <label style="font-size:13px; cursor:pointer;">
-    <input type="checkbox" id="onlySpecial" />
-    할인 제품만 보기
-  </label>
-
   <div class="sort-box">
     <select id="sortSelect">
       <option value="">정렬 없음</option>
@@ -411,12 +406,6 @@ document.getElementById("searchBtn").addEventListener("click", () => {
 
   filteredRows = Array.from(map.values());
 
-  // 할인만 보기 체크 시 필터링
-  const onlySpecial = document.getElementById("onlySpecial").checked;
-  if (onlySpecial) {
-    filteredRows = filteredRows.filter(row => row.price);
-  }
-
   currentPage = 1;
   applySort();
   updateView();
@@ -524,10 +513,6 @@ function closePriceModal() { document.getElementById("priceModal").style.display
 window.onclick = function(event) { if (event.target.id === "contactModal" || event.target.id === "priceModal") { closeModal(); closePriceModal(); } }
 
 const statusPriority = { 'A': 1, 'B': 2, 'C': 3 };
-
-document.getElementById("onlySpecial").addEventListener("change", () => {
-  document.getElementById("searchBtn").click();
-});
 
 document.getElementById("viewAllBtn").addEventListener("click", () => {
 
